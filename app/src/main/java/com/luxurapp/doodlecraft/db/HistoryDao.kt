@@ -1,4 +1,4 @@
-package com.example.doodlecraft.db
+package com.luxurapp.doodlecraft.db
 
 import androidx.room.Dao
 import androidx.room.Insert

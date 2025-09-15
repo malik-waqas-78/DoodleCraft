@@ -1,4 +1,4 @@
-package com.example.doodlecraft.adapters
+package com.luxurapp.doodlecraft.adapters
 
 import android.net.Uri
 import android.provider.MediaStore
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.doodlecraft.databinding.ItemHistoryBinding
-import com.example.doodlecraft.db.HistoryEntity
+import com.luxurapp.doodlecraft.databinding.ItemHistoryBinding
+import com.luxurapp.doodlecraft.db.HistoryEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

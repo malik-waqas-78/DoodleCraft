@@ -1,4 +1,4 @@
-package com.example.doodlecraft
+package com.luxurapp.doodlecraft
 
 import android.Manifest
 import android.content.ContentValues
@@ -23,11 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.doodlecraft.databinding.ActivityMainBinding
-import com.example.doodlecraft.databinding.DialogBrushSizeBinding
-import com.example.doodlecraft.db.HistoryDatabase
-import com.example.doodlecraft.db.HistoryEntity
-import com.example.doodlecraft.views.ShapeType
+import com.luxurapp.doodlecraft.databinding.ActivityMainBinding
+import com.luxurapp.doodlecraft.databinding.DialogBrushSizeBinding
+import com.luxurapp.doodlecraft.db.HistoryDatabase
+import com.luxurapp.doodlecraft.db.HistoryEntity
+import com.luxurapp.doodlecraft.views.ShapeType
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         when (currentTheme) {
             ThemeMode.LIGHT -> setTheme(R.style.Theme_DoodleCraft_Light)
             ThemeMode.DARK -> setTheme(R.style.Theme_DoodleCraft_Dark)
-            ThemeMode.NIGHT -> setTheme(R.style.Theme_DoodleCraft_Night)
         }
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

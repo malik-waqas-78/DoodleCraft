@@ -1,10 +1,10 @@
-package com.example.doodlecraft
+package com.luxurapp.doodlecraft
 
 import android.content.Context
 import android.content.SharedPreferences
 
 enum class ThemeMode {
-    LIGHT, DARK, NIGHT
+    LIGHT, DARK
 }
 
 object ThemeManager {

@@ -1,4 +1,4 @@
-package com.example.doodlecraft.db
+package com.luxurapp.doodlecraft.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

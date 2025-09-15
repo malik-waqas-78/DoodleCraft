@@ -1,4 +1,4 @@
-package com.example.doodlecraft.views
+package com.luxurapp.doodlecraft.views
 
 import android.content.Context
 import android.graphics.*

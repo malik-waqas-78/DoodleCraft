@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace "com.example.doodlecraft"
+    namespace "com.luxurapp.doodlecraft"
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.doodlecraft"
+        applicationId "com.luxurapp.doodlecraft"
         minSdk 24
         targetSdk 36
         versionCode 1

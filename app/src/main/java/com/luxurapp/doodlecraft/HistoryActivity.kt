@@ -1,4 +1,4 @@
-package com.example.doodlecraft
+package com.luxurapp.doodlecraft
 
 import android.net.Uri
 import android.os.Bundle
@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.doodlecraft.adapters.HistoryAdapter
-import com.example.doodlecraft.databinding.ActivityHistoryBinding
-import com.example.doodlecraft.db.HistoryDatabase
-import com.example.doodlecraft.db.HistoryEntity
+import com.luxurapp.doodlecraft.adapters.HistoryAdapter
+import com.luxurapp.doodlecraft.databinding.ActivityHistoryBinding
+import com.luxurapp.doodlecraft.db.HistoryDatabase
+import com.luxurapp.doodlecraft.db.HistoryEntity
 
 class HistoryActivity : AppCompatActivity() {
 
@@ -21,7 +21,6 @@ class HistoryActivity : AppCompatActivity() {
         when (ThemeManager.getTheme(this)) {
             ThemeMode.LIGHT -> setTheme(R.style.Theme_DoodleCraft_Light)
             ThemeMode.DARK -> setTheme(R.style.Theme_DoodleCraft_Dark)
-            ThemeMode.NIGHT -> setTheme(R.style.Theme_DoodleCraft_Night)
         }
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryBinding.inflate(layoutInflater)

@@ -1,4 +1,4 @@
-package com.example.doodlecraft
+package com.luxurapp.doodlecraft
 
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.doodlecraft.databinding.ActivitySettingsBinding
+import com.luxurapp.doodlecraft.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -18,7 +18,6 @@ class SettingsActivity : AppCompatActivity() {
         when (ThemeManager.getTheme(this)) {
             ThemeMode.LIGHT -> setTheme(R.style.Theme_DoodleCraft_Light)
             ThemeMode.DARK -> setTheme(R.style.Theme_DoodleCraft_Dark)
-            ThemeMode.NIGHT -> setTheme(R.style.Theme_DoodleCraft_Night)
         }
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -46,14 +45,12 @@ class SettingsActivity : AppCompatActivity() {
         when (ThemeManager.getTheme(this)) {
             ThemeMode.LIGHT -> binding.radioLight.isChecked = true
             ThemeMode.DARK -> binding.radioDark.isChecked = true
-            ThemeMode.NIGHT -> binding.radioNight.isChecked = true
         }
 
         binding.themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             val selectedTheme = when (checkedId) {
                 R.id.radio_light -> ThemeMode.LIGHT
-                R.id.radio_dark -> ThemeMode.DARK
-                else -> ThemeMode.NIGHT
+                else-> ThemeMode.DARK
             }
             ThemeManager.setTheme(this, selectedTheme)
             recreate()
@@ -62,7 +59,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupPrivacyPolicyLink() {
         binding.privacyPolicyLink.setOnClickListener {
-            val url = "https://your-hosted-privacy-policy.com" // Placeholder URL
+            val url = "https://malik-waqas-78.github.io/Privacy-Policies/doodle_craft_privacy_policy.html" // Placeholder URL
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             try {
                 startActivity(intent)
