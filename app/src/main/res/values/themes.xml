@@ -35,4 +35,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/night_surface</item>
     </style>
 
+    <style name="Widget.App.ImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:padding">12dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
 </resources>

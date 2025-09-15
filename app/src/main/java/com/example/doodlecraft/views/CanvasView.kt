@@ -31,6 +31,8 @@ class CanvasView @JvmOverloads constructor(
     private var startY = 0f
     private var motionEventX = 0f
     private var motionEventY = 0f
+    private var lastX = 0f
+    private var lastY = 0f
 
     // --- Bitmap and Undo/Redo Stacks ---
     private var canvasBitmap: Bitmap? = null
@@ -44,7 +46,6 @@ class CanvasView @JvmOverloads constructor(
         if (w > 0 && h > 0) {
             canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
             drawCanvas = Canvas(canvasBitmap!!)
-            // Initial clear to set background color
             canvasBitmap?.eraseColor(canvasBackgroundColor)
             invalidate()
         }
@@ -66,7 +67,6 @@ class CanvasView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvasBitmap?.let { canvas.drawBitmap(it, 0f, 0f, null) }
 
-        // Draw preview of current action
         if (currentToolMode == ToolMode.BRUSH) {
             canvas.drawPath(currentPath, currentPaint)
         } else if (currentToolMode == ToolMode.SHAPE && startX != 0f) {
@@ -102,17 +102,31 @@ class CanvasView @JvmOverloads constructor(
     private fun handlePathDrawing(event: MotionEvent) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                // Save the state of the canvas BEFORE the new stroke begins.
+                // This treats the entire continuous stroke as a single undoable action,
+                // which is more memory-efficient and intuitive for the user than
+                // saving the state on every single move event.
                 saveStateToUndoStack()
                 currentPath.reset()
                 currentPath.moveTo(motionEventX, motionEventY)
+                lastX = motionEventX
+                lastY = motionEventY
+                invalidate()
             }
-            MotionEvent.ACTION_MOVE -> currentPath.lineTo(motionEventX, motionEventY)
+            MotionEvent.ACTION_MOVE -> {
+                val dirtyRect = RectF(min(lastX, motionEventX), min(lastY, motionEventY), max(lastX, motionEventX), max(lastY, motionEventY))
+                currentPath.lineTo(motionEventX, motionEventY)
+                lastX = motionEventX
+                lastY = motionEventY
+                dirtyRect.inset(-currentPaint.strokeWidth, -currentPaint.strokeWidth)
+                invalidate(Rect(dirtyRect.left.toInt(), dirtyRect.top.toInt(), dirtyRect.right.toInt(), dirtyRect.bottom.toInt()))
+            }
             MotionEvent.ACTION_UP -> {
                 drawCanvas.drawPath(currentPath, currentPaint)
                 currentPath.reset()
+                invalidate()
             }
         }
-        invalidate()
     }
 
     private fun handleShapeDrawing(event: MotionEvent) {
@@ -125,7 +139,7 @@ class CanvasView @JvmOverloads constructor(
             MotionEvent.ACTION_MOVE -> { /* Preview is handled in onDraw */ }
             MotionEvent.ACTION_UP -> {
                 drawShape(drawCanvas, currentShapeType, createPreviewRect(), currentPaint)
-                startX = 0f // Reset start points
+                startX = 0f
                 startY = 0f
             }
         }
@@ -171,7 +185,7 @@ class CanvasView @JvmOverloads constructor(
     }
 
     fun clearCanvas() {
-        saveStateToUndoStack() // Save the current state before clearing
+        saveStateToUndoStack()
         canvasBitmap?.eraseColor(canvasBackgroundColor)
         invalidate()
     }
