@@ -3,7 +3,7 @@
     <style name="Theme.DoodleCraft" parent="Theme.DoodleCraft.Light" />
 
     <!-- Light Theme -->
-    <style name="Theme.DoodleCraft.Light" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.DoodleCraft.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -14,7 +14,7 @@
     </style>
 
     <!-- Dark Theme -->
-    <style name="Theme.DoodleCraft.Dark" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+    <style name="Theme.DoodleCraft.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/purple_200</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
@@ -25,7 +25,7 @@
     </style>
 
     <!-- Night (Dimmed) Theme -->
-    <style name="Theme.DoodleCraft.Night" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+    <style name="Theme.DoodleCraft.Night" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/night_background</item>
         <item name="colorSurface">@color/night_surface</item>
         <item name="colorPrimary">@color/night_primary</item>

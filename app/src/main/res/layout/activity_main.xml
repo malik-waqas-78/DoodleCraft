@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/top_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/app_name" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <com.example.doodlecraft.views.CanvasView
         android:id="@+id/canvas_view"
         android:layout_width="match_parent"
@@ -28,21 +40,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_history"
-                    style="@style/Widget.App.ImageButton"
-                    android:contentDescription="History"
-                    android:src="@android:drawable/ic_menu_recent_history" />
-
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_settings"
-                    style="@style/Widget.App.ImageButton"
-                    android:contentDescription="Settings"
-                    android:src="@android:drawable/ic_menu_preferences" />
 
                 <ImageButton
                     android:layout_width="match_parent"
@@ -95,10 +92,10 @@
                 <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/btn_clear"
+                    android:id="@+id/btn_canvas_color"
                     style="@style/Widget.App.ImageButton"
-                    android:contentDescription="Clear Canvas"
-                    android:src="@android:drawable/ic_menu_delete" />
+                    android:contentDescription="Canvas Color"
+                    android:src="@android:drawable/ic_menu_crop" />
 
                 <ImageButton
                     android:layout_width="match_parent"
@@ -115,22 +112,6 @@
                     style="@style/Widget.App.ImageButton"
                     android:contentDescription="Redo"
                     android:src="@android:drawable/ic_media_next" />
-
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_save"
-                    style="@style/Widget.App.ImageButton"
-                    android:contentDescription="Save Drawing"
-                    android:src="@android:drawable/ic_menu_save" />
-
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_share"
-                    style="@style/Widget.App.ImageButton"
-                    android:contentDescription="Share Drawing"
-                    android:src="@android:drawable/ic_menu_share" />
 
             </LinearLayout>
         </HorizontalScrollView>
