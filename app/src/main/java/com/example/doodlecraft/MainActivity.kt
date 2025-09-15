@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.doodlecraft.databinding.ActivityMainBinding
 import com.example.doodlecraft.databinding.DialogBrushSizeBinding
 import com.example.doodlecraft.db.HistoryDatabase
@@ -46,11 +48,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Apply window insets handling
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+
+        binding.topAppBar.overflowIcon?.setTint(ContextCompat.getColor(this, R.color.white))
         setSupportActionBar(binding.topAppBar)
         setupClickListeners()
         handleIncomingIntents()
 
-        val canvasBgColor = if (currentTheme == ThemeMode.LIGHT) Color.WHITE else Color.parseColor("#FF121212")
+        val canvasBgColor =
+            if (currentTheme == ThemeMode.LIGHT) Color.WHITE else Color.parseColor("#FF121212")
         binding.canvasView.setCanvasBackgroundColor(canvasBgColor)
     }
 
@@ -61,11 +72,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_save -> { saveDrawing(); true }
-            R.id.action_share -> { shareDrawing(); true }
-            R.id.action_clear -> { binding.canvasView.clearCanvas(); true }
-            R.id.action_history -> { startActivity(Intent(this, HistoryActivity::class.java)); true }
-            R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
+            R.id.action_save -> {
+                saveDrawing(); true
+            }
+
+            R.id.action_share -> {
+                shareDrawing(); true
+            }
+
+            R.id.action_clear -> {
+                binding.canvasView.clearCanvas(); true
+            }
+
+            R.id.action_history -> {
+                startActivity(Intent(this, HistoryActivity::class.java)); true
+            }
+
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java)); finish(); true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -84,8 +110,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveDrawing() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERMISSION_CODE
+            )
             return
         }
         val bitmap = binding.canvasView.getDrawingAsBitmap() ?: return
@@ -93,17 +127,25 @@ class MainActivity : AppCompatActivity() {
         Thread {
             val imageUri = saveBitmapToGallery(bitmap)
             runOnUiThread {
-                if (imageUri != null) Toast.makeText(this, "Drawing saved!", Toast.LENGTH_SHORT).show()
+                if (imageUri != null) Toast.makeText(this, "Drawing saved!", Toast.LENGTH_SHORT)
+                    .show()
                 else Toast.makeText(this, "Failed to save.", Toast.LENGTH_LONG).show()
             }
             if (imageUri != null) {
-                val entity = HistoryEntity(filePath = imageUri.toString(), timestamp = System.currentTimeMillis())
+                val entity = HistoryEntity(
+                    filePath = imageUri.toString(),
+                    timestamp = System.currentTimeMillis()
+                )
                 HistoryDatabase.getDatabase(applicationContext).historyDao().insertDrawing(entity)
             }
         }.start()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_CODE && grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED) {
             saveDrawing()
@@ -125,7 +167,12 @@ class MainActivity : AppCompatActivity() {
         val imageUri = contentResolver.insert(collection, values) ?: return null
         return try {
             contentResolver.openOutputStream(imageUri)?.use {
-                if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)) throw IOException("Failed to save bitmap.")
+                if (!bitmap.compress(
+                        Bitmap.CompressFormat.JPEG,
+                        90,
+                        it
+                    )
+                ) throw IOException("Failed to save bitmap.")
             } ?: throw IOException("Failed to get output stream.")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 values.clear()
@@ -146,10 +193,16 @@ class MainActivity : AppCompatActivity() {
             setTitle("Select Brush Size")
             setView(dialogBinding.root)
             setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            dialogBinding.seekbarBrushSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            dialogBinding.seekbarBrushSize.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     binding.canvasView.setBrushSize(progress.toFloat())
                 }
+
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
@@ -158,7 +211,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun showColorPickerDialog(isCanvasBg: Boolean) {
         val colors = arrayOf("Black", "Red", "Green", "Blue", "Yellow", "White", "Gray")
-        val colorValues = intArrayOf(Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.WHITE, Color.GRAY)
+        val colorValues = intArrayOf(
+            Color.BLACK,
+            Color.RED,
+            Color.GREEN,
+            Color.BLUE,
+            Color.YELLOW,
+            Color.WHITE,
+            Color.GRAY
+        )
         AlertDialog.Builder(this).apply {
             setTitle(if (isCanvasBg) "Choose Background Color" else "Choose Brush Color")
             setItems(colors) { _, which ->
@@ -204,7 +265,9 @@ class MainActivity : AppCompatActivity() {
         Thread {
             val imageUri = saveBitmapToCache(bitmap)
             if (imageUri == null) {
-                runOnUiThread { Toast.makeText(this, "Failed to share drawing", Toast.LENGTH_SHORT).show() }
+                runOnUiThread {
+                    Toast.makeText(this, "Failed to share drawing", Toast.LENGTH_SHORT).show()
+                }
                 return@Thread
             }
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -241,7 +304,8 @@ class MainActivity : AppCompatActivity() {
                     binding.canvasView.loadBitmapForEditing(bitmap)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(this, "Failed to load drawing for editing.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to load drawing for editing.", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

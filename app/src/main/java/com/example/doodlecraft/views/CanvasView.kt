@@ -152,7 +152,7 @@ class CanvasView @JvmOverloads constructor(
                 saveStateToUndoStack()
                 drawCanvas.drawText(text, motionEventX, motionEventY, currentPaint)
                 textToPlace = null
-                setToolToBrush()
+                //setToolToBrush()
                 invalidate()
             }
         }

@@ -1,10 +1,11 @@
 package com.example.doodlecraft
 
-import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.doodlecraft.adapters.HistoryAdapter
 import com.example.doodlecraft.databinding.ActivityHistoryBinding
@@ -25,7 +26,13 @@ class HistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        // Apply window insets handling
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        setSupportActionBar(binding.topAppBar)
         setupRecyclerView()
         loadHistory()
     }
@@ -33,10 +40,10 @@ class HistoryActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         historyAdapter = HistoryAdapter(
             onEditClicked = { historyEntity ->
-                val intent = Intent(this, MainActivity::class.java).apply {
-                    putExtra("EDIT_DRAWING_URI", historyEntity.filePath)
-                }
-                startActivity(intent)
+//                val intent = Intent(this, MainActivity::class.java).apply {
+//                    putExtra("EDIT_DRAWING_URI", historyEntity.filePath)
+//                }
+//                startActivity(intent)
             },
             onDeleteClicked = { historyEntity ->
                 showDeleteConfirmationDialog(historyEntity)
@@ -50,7 +57,8 @@ class HistoryActivity : AppCompatActivity() {
 
     private fun loadHistory() {
         Thread {
-            val historyList = HistoryDatabase.getDatabase(applicationContext).historyDao().getAllDrawings()
+            val historyList =
+                HistoryDatabase.getDatabase(applicationContext).historyDao().getAllDrawings()
             runOnUiThread {
                 historyAdapter.submitList(historyList)
             }

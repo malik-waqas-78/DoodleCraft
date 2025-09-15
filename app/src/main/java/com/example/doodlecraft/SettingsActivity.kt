@@ -5,6 +5,9 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.doodlecraft.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -20,9 +23,23 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        // Apply window insets handling
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        setSupportActionBar(binding.topAppBar)
         setupThemeSelector()
         setupPrivacyPolicyLink()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Your custom back press logic
+                startActivity(Intent(this@SettingsActivity, MainActivity::class.java))
+                finish()
+            }
+        })
     }
 
     private fun setupThemeSelector() {
@@ -54,4 +71,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+
+
 }
