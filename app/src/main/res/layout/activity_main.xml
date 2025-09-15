@@ -40,16 +40,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_brush" android:contentDescription="Brush" android:src="@android:drawable/ic_menu_edit" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_eraser" android:contentDescription="Eraser" android:src="@android:drawable/ic_menu_close_clear_cancel" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_shapes" android:contentDescription="Shapes" android:src="@android:drawable/ic_menu_crop" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_text" android:contentDescription="Text" android:src="@android:drawable/ic_menu_agenda" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_color" android:contentDescription="Color" android:src="@android:drawable/ic_menu_gallery" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_size" android:contentDescription="Brush Size" android:src="@android:drawable/ic_menu_sort_by_size" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_canvas_color" android:contentDescription="Canvas Color" android:src="@android:drawable/ic_menu_crop_landscape" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_undo" android:contentDescription="Undo" android:src="@android:drawable/ic_menu_revert" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_redo" android:contentDescription="Redo" android:src="@android:drawable/ic_media_next" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_brush" android:contentDescription="Brush" android:src="@drawable/ic_brush_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_eraser" android:contentDescription="Eraser" android:src="@drawable/ic_eraser_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_shapes" android:contentDescription="Shapes" android:src="@drawable/ic_shapes_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_text" android:contentDescription="Text" android:src="@drawable/ic_text_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_color" android:contentDescription="Color" android:src="@drawable/ic_palette_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_size" android:contentDescription="Brush Size" android:src="@drawable/ic_sort_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_canvas_color" android:contentDescription="Canvas Color" android:src="@drawable/ic_palette_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_undo" android:contentDescription="Undo" android:src="@drawable/ic_undo_24" />
+                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_redo" android:contentDescription="Redo" android:src="@drawable/ic_redo_24" />
 
             </LinearLayout>
         </HorizontalScrollView>
