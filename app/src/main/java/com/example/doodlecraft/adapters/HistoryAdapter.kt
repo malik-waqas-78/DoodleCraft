@@ -14,6 +14,7 @@ import java.util.Date
 import java.util.Locale
 
 class HistoryAdapter(
+    private val onEditClicked: (HistoryEntity) -> Unit,
     private val onDeleteClicked: (HistoryEntity) -> Unit
 ) : ListAdapter<HistoryEntity, HistoryAdapter.HistoryViewHolder>(HistoryDiffCallback()) {
 
@@ -24,11 +25,15 @@ class HistoryAdapter(
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item, onDeleteClicked)
+        holder.bind(item, onEditClicked, onDeleteClicked)
     }
 
     class HistoryViewHolder(private val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HistoryEntity, onDeleteClicked: (HistoryEntity) -> Unit) {
+        fun bind(
+            item: HistoryEntity,
+            onEditClicked: (HistoryEntity) -> Unit,
+            onDeleteClicked: (HistoryEntity) -> Unit
+        ) {
             binding.historyTimestamp.text = formatTimestamp(item.timestamp)
 
             try {
@@ -37,6 +42,10 @@ class HistoryAdapter(
                 binding.historyThumbnail.setImageBitmap(bitmap)
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+
+            binding.root.setOnClickListener {
+                onEditClicked(item)
             }
 
             binding.root.setOnLongClickListener {

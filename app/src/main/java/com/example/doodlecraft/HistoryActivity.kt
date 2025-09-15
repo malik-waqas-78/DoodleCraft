@@ -1,5 +1,6 @@
 package com.example.doodlecraft
 
+import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -30,12 +31,20 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter { historyEntity ->
-            showDeleteConfirmationDialog(historyEntity)
-        }
+        historyAdapter = HistoryAdapter(
+            onEditClicked = { historyEntity ->
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    putExtra("EDIT_DRAWING_URI", historyEntity.filePath)
+                }
+                startActivity(intent)
+            },
+            onDeleteClicked = { historyEntity ->
+                showDeleteConfirmationDialog(historyEntity)
+            }
+        )
         binding.historyRecyclerView.apply {
             adapter = historyAdapter
-            layoutManager = GridLayoutManager(this@HistoryActivity, 2) // 2 columns grid
+            layoutManager = GridLayoutManager(this@HistoryActivity, 2)
         }
     }
 
@@ -61,17 +70,12 @@ class HistoryActivity : AppCompatActivity() {
 
     private fun deleteDrawing(entity: HistoryEntity) {
         Thread {
-            // Delete from Room database
             HistoryDatabase.getDatabase(applicationContext).historyDao().deleteDrawing(entity)
-
-            // Delete the file from MediaStore
             try {
                 contentResolver.delete(Uri.parse(entity.filePath), null, null)
             } catch (e: Exception) {
-                e.printStackTrace() // Handle exceptions, e.g., file not found
+                e.printStackTrace()
             }
-
-            // Reload the history to reflect the change
             loadHistory()
         }.start()
     }

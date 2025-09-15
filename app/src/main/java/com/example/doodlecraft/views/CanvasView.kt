@@ -190,6 +190,13 @@ class CanvasView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun setCanvasBackgroundColor(color: Int) {
+        canvasBackgroundColor = color
+        // Erase the bitmap with the new color, effectively changing the background
+        canvasBitmap?.eraseColor(canvasBackgroundColor)
+        invalidate()
+    }
+
     // --- Public API for MainActivity ---
     fun getDrawingAsBitmap(): Bitmap? = canvasBitmap
 
@@ -228,5 +235,21 @@ class CanvasView @JvmOverloads constructor(
         currentPaint.style = Paint.Style.FILL
         currentPaint.color = brushColor
         currentPaint.textSize = 60f
+    }
+
+    fun loadBitmapForEditing(bitmap: Bitmap) {
+        // Clear existing drawing and undo/redo stacks
+        undoStack.clear()
+        redoStack.clear()
+
+        // Set the new bitmap as the base
+        canvasBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        drawCanvas = Canvas(canvasBitmap!!)
+
+        // Save this initial state to the undo stack so the user can undo back to it
+        // Note: A new drawing action will also call saveStateToUndoStack, so the first
+        // undo will revert to the loaded image.
+
+        invalidate()
     }
 }
