@@ -1,0 +1,17 @@
+SHORT DESCRIPTION:
+Unleash your creativity with Doodle Craft! A simple, powerful drawing app for all your doodling, sketching, and design needs.
+
+LONG DESCRIPTION:
+Welcome to Doodle Craft, the perfect canvas for your imagination!
+
+Whether you're an artist, a designer, or just love to doodle, our app provides the tools you need to bring your ideas to life. With a clean and intuitive interface, you can focus on what matters most: creating.
+
+Features:
+- **Versatile Drawing Tools:** Choose from a freehand brush, precise shapes (rectangles, circles, lines), and a powerful text tool.
+- **Full Control:** Easily adjust the color and size of your brush and tools to get the perfect look.
+- **Edit with Confidence:** Made a mistake? No problem! Our undo and redo features let you step back and forth through your creative process.
+- **Save & Share:** Save your masterpieces to your device's gallery as high-quality JPG or PNG files, or share them directly with friends on your favorite social apps.
+- **Your Personal Gallery:** Keep all your creations in one place with our built-in history. View, edit, or delete past drawings with ease.
+- **Custom Themes:** Choose between Light, Dark, and a special dimmed Night mode to draw comfortably in any environment.
+
+Doodle Craft is designed to be simple enough for a quick sketch but powerful enough for detailed artwork. Download now and start crafting your doodles!

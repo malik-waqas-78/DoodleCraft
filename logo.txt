@@ -1,0 +1,27 @@
+PROMPT FOR AI IMAGE GENERATOR:
+
+Create a modern, friendly app logo for "Doodle Craft".
+
+**Core Concept:** The logo should combine the idea of "doodling" (fun, creative, freeform) with "craft" (skill, building, structure). It should feel playful yet polished.
+
+**Key Elements:**
+- A stylized pencil or brush as the central element.
+- Incorporate simple geometric shapes (like a circle or square) being "drawn" or built by the pencil/brush.
+- The name "Doodle Craft" should be integrated, either below or alongside the icon. Use a clean, rounded, sans-serif font.
+
+**Style:**
+- Flat design or minimal 2D vector style.
+- Bright, cheerful color palette. Primary colors like blue, yellow, and red are good, or a creative combination like teal and orange.
+- The lines should be clean and sharp.
+
+**Avoid:**
+- Overly complex or realistic imagery.
+- 3D effects or shadows.
+- Messy, "scribbled" looks. The "doodle" part should be represented by creativity, not messiness.
+
+**Example Ideas:**
+1. A pencil drawing a perfect, colorful circle, with the tip of the pencil transitioning into the circle's line.
+2. A brush painting a simple house icon made of basic shapes.
+3. The letter "D" from "Doodle" is a pencil, and the "C" from "Craft" is a partially drawn square.
+
+Generate a few options on a clean white background.
