@@ -1,0 +1,21 @@
+# IDE files
+.idea/
+*.iml
+build/
+.gradle/
+
+# Local configuration
+local.properties
+
+# Keystore files
+*.jks
+*.keystore
+
+# Log files
+*.log
+
+# Mac OS files
+.DS_Store
+
+# Captures
+.cxx/
