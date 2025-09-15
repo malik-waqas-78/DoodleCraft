@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +19,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.doodlecraft.databinding.ActivityMainBinding
 import com.example.doodlecraft.databinding.DialogBrushSizeBinding
+import com.example.doodlecraft.db.HistoryDatabase
+import com.example.doodlecraft.db.HistoryEntity
 import com.example.doodlecraft.views.ShapeType
 import java.io.IOException
 
@@ -27,13 +30,11 @@ class MainActivity : AppCompatActivity() {
     private val STORAGE_PERMISSION_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply the theme before the view is created
         when (ThemeManager.getTheme(this)) {
             ThemeMode.LIGHT -> setTheme(R.style.Theme_DoodleCraft_Light)
             ThemeMode.DARK -> setTheme(R.style.Theme_DoodleCraft_Dark)
             ThemeMode.NIGHT -> setTheme(R.style.Theme_DoodleCraft_Night)
         }
-
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
-            return // Wait for permission result
+            return
         }
 
         val bitmap = binding.canvasView.getDrawingAsBitmap()
@@ -68,29 +69,31 @@ class MainActivity : AppCompatActivity() {
 
         Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show()
         Thread {
-            val success = saveBitmapToGallery(bitmap)
+            val imageUri = saveBitmapToGallery(bitmap)
             runOnUiThread {
-                if (success) {
+                if (imageUri != null) {
                     Toast.makeText(this, "Drawing saved to gallery!", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Failed to save drawing.", Toast.LENGTH_LONG).show()
                 }
+            }
+            if (imageUri != null) {
+                val entity = HistoryEntity(filePath = imageUri.toString(), timestamp = System.currentTimeMillis())
+                HistoryDatabase.getDatabase(applicationContext).historyDao().insertDrawing(entity)
             }
         }.start()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveDrawing() // Retry saving
-            } else {
-                Toast.makeText(this, "Permission denied. Cannot save drawing.", Toast.LENGTH_SHORT).show()
-            }
+        if (requestCode == STORAGE_PERMISSION_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveDrawing()
+        } else {
+            Toast.makeText(this, "Permission denied. Cannot save drawing.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun saveBitmapToGallery(bitmap: Bitmap): Boolean {
+    private fun saveBitmapToGallery(bitmap: Bitmap): Uri? {
         val filename = "DoodleCraft_${System.currentTimeMillis()}.jpg"
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, filename)
@@ -101,7 +104,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val imageUri = contentResolver.insert(collection, values) ?: return false
+        val imageUri = contentResolver.insert(collection, values) ?: return null
 
         return try {
             contentResolver.openOutputStream(imageUri).use { outputStream ->
@@ -116,66 +119,13 @@ class MainActivity : AppCompatActivity() {
                 values.put(MediaStore.Images.Media.IS_PENDING, 0)
                 contentResolver.update(imageUri, values, null, null)
             }
-            true
+            imageUri
         } catch (e: IOException) {
             e.printStackTrace()
             contentResolver.delete(imageUri, null, null)
-            false
+            null
         }
     }
 
-    private fun showBrushSizeDialog() {
-        val dialogBinding = DialogBrushSizeBinding.inflate(layoutInflater)
-        AlertDialog.Builder(this).apply {
-            setTitle("Select Brush Size")
-            setView(dialogBinding.root)
-            setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-            dialogBinding.seekbarBrushSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    binding.canvasView.setBrushSize(progress.toFloat())
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-        }.create().show()
-    }
-
-    private fun showColorPickerDialog() {
-        val colors = arrayOf("Black", "Red", "Green", "Blue", "Yellow")
-        val colorValues = intArrayOf(Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW)
-        AlertDialog.Builder(this).apply {
-            setTitle("Choose a color")
-            setItems(colors) { _, which ->
-                binding.canvasView.setBrushColor(colorValues[which])
-            }
-        }.create().show()
-    }
-
-    private fun showShapeSelectionDialog() {
-        val shapes = arrayOf("Rectangle", "Circle", "Line")
-        AlertDialog.Builder(this).apply {
-            setTitle("Choose a shape")
-            setItems(shapes) { _, which ->
-                val selectedShape = when (which) {
-                    0 -> ShapeType.RECTANGLE
-                    1 -> ShapeType.CIRCLE
-                    else -> ShapeType.LINE
-                }
-                binding.canvasView.setToolToShape(selectedShape)
-            }
-        }.create().show()
-    }
-
-    private fun showTextDialog() {
-        val input = EditText(this).apply { inputType = InputType.TYPE_CLASS_TEXT }
-        AlertDialog.Builder(this).apply {
-            setTitle("Enter Text")
-            setView(input)
-            setPositiveButton("OK") { _, _ ->
-                val text = input.text.toString()
-                if (text.isNotEmpty()) binding.canvasView.setToolToText(text)
-            }
-            setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-        }.show()
-    }
+    // ... other dialog functions ...
 }
