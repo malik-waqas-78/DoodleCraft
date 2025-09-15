@@ -28,20 +28,109 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_history" android:contentDescription="History" android:src="@android:drawable/ic_menu_recent_history" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_settings" android:contentDescription="Settings" android:src="@android:drawable/ic_menu_preferences" />
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_history"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="History"
+                    android:src="@android:drawable/ic_menu_recent_history" />
 
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_brush" android:contentDescription="Brush" android:src="@android:drawable/ic_menu_edit" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_eraser" android:contentDescription="Eraser" android:src="@android:drawable/ic_menu_close_clear_cancel" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_shapes" android:contentDescription="Shapes" android:src="@android:drawable/ic_menu_crop" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_text" android:contentDescription="Text" android:src="@android:drawable/ic_menu_agenda" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_color" android:contentDescription="Color" android:src="@android:drawable/ic_menu_gallery" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_size" android:contentDescription="Brush Size" android:src="@android:drawable/ic_menu_sort_by_size" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_clear" android:contentDescription="Clear Canvas" android:src="@android:drawable/ic_menu_delete" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_undo" android:contentDescription="Undo" android:src="@android:drawable/ic_menu_revert" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_redo" android:contentDescription="Redo" android:src="@android:drawable/ic_media_next" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_save" android:contentDescription="Save Drawing" android:src="@android:drawable/ic_menu_save" />
-                <ImageButton style="@style/Widget.App.ImageButton" android:id="@+id/btn_share" android:contentDescription="Share Drawing" android:src="@android:drawable/ic_menu_share" />
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_settings"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Settings"
+                    android:src="@android:drawable/ic_menu_preferences" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_brush"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Brush"
+                    android:src="@android:drawable/ic_menu_edit" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_eraser"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Eraser"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_shapes"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Shapes"
+                    android:src="@android:drawable/ic_menu_crop" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_text"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Text"
+                    android:src="@android:drawable/ic_menu_agenda" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_color"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Color"
+                    android:src="@android:drawable/ic_menu_gallery" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_size"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Brush Size"
+                    android:src="@android:drawable/ic_menu_sort_by_size" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_clear"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Clear Canvas"
+                    android:src="@android:drawable/ic_menu_delete" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_undo"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Undo"
+                    android:src="@android:drawable/ic_menu_revert" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_redo"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Redo"
+                    android:src="@android:drawable/ic_media_next" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_save"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Save Drawing"
+                    android:src="@android:drawable/ic_menu_save" />
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_share"
+                    style="@style/Widget.App.ImageButton"
+                    android:contentDescription="Share Drawing"
+                    android:src="@android:drawable/ic_menu_share" />
 
             </LinearLayout>
         </HorizontalScrollView>
