@@ -5,26 +5,13 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import java.util.Stack
 import kotlin.math.max
 import kotlin.math.min
 
-// --- Data classes and Enums for drawing ---
-
-enum class ToolMode {
-    BRUSH, SHAPE, TEXT
-}
-
-enum class ShapeType {
-    RECTANGLE, CIRCLE, LINE
-}
-
-sealed class DrawingAction {
-    data class PathAction(val path: Path, val paint: Paint) : DrawingAction()
-    data class ShapeAction(val type: ShapeType, val rect: RectF, val paint: Paint) : DrawingAction()
-    data class TextAction(val text: String, val x: Float, val y: Float, val paint: Paint) : DrawingAction()
-}
-
-// --- CanvasView Implementation ---
+// --- Enums for Tools ---
+enum class ToolMode { BRUSH, SHAPE, TEXT }
+enum class ShapeType { RECTANGLE, CIRCLE, LINE }
 
 class CanvasView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -37,17 +24,31 @@ class CanvasView @JvmOverloads constructor(
     private var currentShapeType = ShapeType.RECTANGLE
     private var textToPlace: String? = null
 
-    private val completedActions = mutableListOf<DrawingAction>()
-    private val undoneActions = mutableListOf<DrawingAction>()
-
     private var brushColor = Color.BLACK
     private var canvasBackgroundColor = Color.WHITE
 
     private var startX = 0f
     private var startY = 0f
-    private var previewRect: RectF? = null
+    private var motionEventX = 0f
+    private var motionEventY = 0f
 
-    // --- Core Drawing Logic ---
+    // --- Bitmap and Undo/Redo Stacks ---
+    private var canvasBitmap: Bitmap? = null
+    private lateinit var drawCanvas: Canvas
+    private val undoStack = Stack<Bitmap>()
+    private val redoStack = Stack<Bitmap>()
+
+    // --- Setup ---
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (w > 0 && h > 0) {
+            canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            drawCanvas = Canvas(canvasBitmap!!)
+            // Initial clear to set background color
+            canvasBitmap?.eraseColor(canvasBackgroundColor)
+            invalidate()
+        }
+    }
 
     private fun createPaint(): Paint {
         return Paint().apply {
@@ -60,26 +61,16 @@ class CanvasView @JvmOverloads constructor(
         }
     }
 
+    // --- Drawing Logic ---
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawColor(canvasBackgroundColor)
+        canvasBitmap?.let { canvas.drawBitmap(it, 0f, 0f, null) }
 
-        for (action in completedActions) {
-            drawAction(canvas, action)
-        }
-
+        // Draw preview of current action
         if (currentToolMode == ToolMode.BRUSH) {
             canvas.drawPath(currentPath, currentPaint)
-        } else if (currentToolMode == ToolMode.SHAPE) {
-            previewRect?.let { drawShape(canvas, currentShapeType, it, currentPaint) }
-        }
-    }
-
-    private fun drawAction(canvas: Canvas, action: DrawingAction) {
-        when (action) {
-            is DrawingAction.PathAction -> canvas.drawPath(action.path, action.paint)
-            is DrawingAction.ShapeAction -> drawShape(canvas, action.type, action.rect, action.paint)
-            is DrawingAction.TextAction -> canvas.drawText(action.text, action.x, action.y, action.paint)
+        } else if (currentToolMode == ToolMode.SHAPE && startX != 0f) {
+            drawShape(canvas, currentShapeType, createPreviewRect(), currentPaint)
         }
     }
 
@@ -87,13 +78,19 @@ class CanvasView @JvmOverloads constructor(
         when (type) {
             ShapeType.RECTANGLE -> canvas.drawRect(rect, paint)
             ShapeType.CIRCLE -> canvas.drawOval(rect, paint)
-            ShapeType.LINE -> canvas.drawLine(rect.left, rect.top, rect.right, rect.bottom, paint)
+            ShapeType.LINE -> canvas.drawLine(startX, startY, motionEventX, motionEventY, paint)
         }
     }
 
-    // --- Touch Event Handling ---
+    private fun createPreviewRect(): RectF {
+        return RectF(min(startX, motionEventX), min(startY, motionEventY), max(startX, motionEventX), max(motionEventY, startY))
+    }
 
+    // --- Touch Handling ---
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        motionEventX = event.x
+        motionEventY = event.y
+
         when (currentToolMode) {
             ToolMode.BRUSH -> handlePathDrawing(event)
             ToolMode.SHAPE -> handleShapeDrawing(event)
@@ -103,46 +100,33 @@ class CanvasView @JvmOverloads constructor(
     }
 
     private fun handlePathDrawing(event: MotionEvent) {
-        val x = event.x
-        val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                saveStateToUndoStack()
                 currentPath.reset()
-                currentPath.moveTo(x, y)
+                currentPath.moveTo(motionEventX, motionEventY)
             }
-            MotionEvent.ACTION_MOVE -> currentPath.lineTo(x, y)
+            MotionEvent.ACTION_MOVE -> currentPath.lineTo(motionEventX, motionEventY)
             MotionEvent.ACTION_UP -> {
-                completedActions.add(DrawingAction.PathAction(currentPath, Paint(currentPaint)))
-                undoneActions.clear()
-                currentPath = Path()
+                drawCanvas.drawPath(currentPath, currentPaint)
+                currentPath.reset()
             }
         }
         invalidate()
     }
 
     private fun handleShapeDrawing(event: MotionEvent) {
-        val x = event.x
-        val y = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                startX = x
-                startY = y
-                previewRect = RectF(x, y, x, y)
+                saveStateToUndoStack()
+                startX = motionEventX
+                startY = motionEventY
             }
-            MotionEvent.ACTION_MOVE -> {
-                previewRect?.set(min(startX, x), min(startY, y), max(startX, x), max(startY, y))
-                if (currentShapeType == ShapeType.LINE) {
-                    previewRect?.right = x
-                    previewRect?.bottom = y
-                }
-            }
+            MotionEvent.ACTION_MOVE -> { /* Preview is handled in onDraw */ }
             MotionEvent.ACTION_UP -> {
-                previewRect?.let {
-                    val finalRect = if (currentShapeType == ShapeType.LINE) RectF(startX, startY, x, y) else it
-                    completedActions.add(DrawingAction.ShapeAction(currentShapeType, finalRect, Paint(currentPaint)))
-                    undoneActions.clear()
-                }
-                previewRect = null
+                drawShape(drawCanvas, currentShapeType, createPreviewRect(), currentPaint)
+                startX = 0f // Reset start points
+                startY = 0f
             }
         }
         invalidate()
@@ -151,16 +135,49 @@ class CanvasView @JvmOverloads constructor(
     private fun handleTextPlacement(event: MotionEvent) {
         if (event.action == MotionEvent.ACTION_DOWN) {
             textToPlace?.let { text ->
-                completedActions.add(DrawingAction.TextAction(text, event.x, event.y, Paint(currentPaint)))
-                undoneActions.clear()
+                saveStateToUndoStack()
+                drawCanvas.drawText(text, motionEventX, motionEventY, currentPaint)
                 textToPlace = null
-                setToolToBrush() // Revert to brush tool
+                setToolToBrush()
                 invalidate()
             }
         }
     }
 
+    // --- Undo/Redo and State Management ---
+    private fun saveStateToUndoStack() {
+        canvasBitmap?.let {
+            undoStack.push(it.copy(Bitmap.Config.ARGB_8888, true))
+            redoStack.clear()
+        }
+    }
+
+    fun undo() {
+        if (undoStack.isNotEmpty()) {
+            canvasBitmap?.let { redoStack.push(it.copy(Bitmap.Config.ARGB_8888, true)) }
+            canvasBitmap = undoStack.pop()
+            drawCanvas = Canvas(canvasBitmap!!)
+            invalidate()
+        }
+    }
+
+    fun redo() {
+        if (redoStack.isNotEmpty()) {
+            canvasBitmap?.let { undoStack.push(it.copy(Bitmap.Config.ARGB_8888, true)) }
+            canvasBitmap = redoStack.pop()
+            drawCanvas = Canvas(canvasBitmap!!)
+            invalidate()
+        }
+    }
+
+    fun clearCanvas() {
+        saveStateToUndoStack() // Save the current state before clearing
+        canvasBitmap?.eraseColor(canvasBackgroundColor)
+        invalidate()
+    }
+
     // --- Public API for MainActivity ---
+    fun getDrawingAsBitmap(): Bitmap? = canvasBitmap
 
     fun setBrushColor(newColor: Int) {
         brushColor = newColor
@@ -169,7 +186,7 @@ class CanvasView @JvmOverloads constructor(
 
     fun setBrushSize(newSize: Float) {
         currentPaint.strokeWidth = newSize
-        currentPaint.textSize = newSize * 3 // Make text size proportional
+        currentPaint.textSize = newSize * 3
     }
 
     fun setToolToBrush() {
@@ -196,29 +213,6 @@ class CanvasView @JvmOverloads constructor(
         textToPlace = text
         currentPaint.style = Paint.Style.FILL
         currentPaint.color = brushColor
-        currentPaint.textSize = 60f // Default text size
-    }
-
-    fun clearCanvas() {
-        completedActions.clear()
-        undoneActions.clear()
-        currentPath.reset()
-        previewRect = null
-        invalidate()
-    }
-
-    fun undo() {
-        if (completedActions.isNotEmpty()) {
-            undoneActions.add(completedActions.removeAt(completedActions.size - 1))
-            invalidate()
-        }
-    }
-
-    fun redo() {
-        if (undoneActions.isNotEmpty()) {
-            val lastUndoneAction = undoneActions.removeAt(undoneActions.size - 1)
-            completedActions.add(lastUndoneAction)
-            invalidate()
-        }
+        currentPaint.textSize = 60f
     }
 }

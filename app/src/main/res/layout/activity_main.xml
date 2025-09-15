@@ -69,6 +69,13 @@
             android:src="@android:drawable/ic_menu_sort_by_size" />
 
         <ImageButton
+            android:id="@+id/btn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Clear Canvas"
+            android:src="@android:drawable/ic_menu_delete" />
+
+        <ImageButton
             android:id="@+id/btn_undo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,6 +88,13 @@
             android:layout_height="wrap_content"
             android:contentDescription="Redo"
             android:src="@android:drawable/ic_media_next" />
+
+        <ImageButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Save Drawing"
+            android:src="@android:drawable/ic_menu_save" />
 
     </LinearLayout>
 
