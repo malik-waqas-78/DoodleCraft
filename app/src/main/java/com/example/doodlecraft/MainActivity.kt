@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         setupClickListeners()
         handleIncomingIntents()
 
-        // Set initial canvas background based on theme
         val canvasBgColor = if (currentTheme == ThemeMode.LIGHT) Color.WHITE else Color.parseColor("#FF121212")
         binding.canvasView.setCanvasBackgroundColor(canvasBgColor)
     }
@@ -142,7 +141,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBrushSizeDialog() {
-        // ... (implementation remains the same)
+        val dialogBinding = DialogBrushSizeBinding.inflate(layoutInflater)
+        AlertDialog.Builder(this).apply {
+            setTitle("Select Brush Size")
+            setView(dialogBinding.root)
+            setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            dialogBinding.seekbarBrushSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    binding.canvasView.setBrushSize(progress.toFloat())
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+        }.create().show()
     }
 
     private fun showColorPickerDialog(isCanvasBg: Boolean) {
@@ -160,17 +171,79 @@ class MainActivity : AppCompatActivity() {
         }.create().show()
     }
 
-    // ... other dialog functions ...
+    private fun showShapeSelectionDialog() {
+        val shapes = arrayOf("Rectangle", "Circle", "Line")
+        AlertDialog.Builder(this).apply {
+            setTitle("Choose a shape")
+            setItems(shapes) { _, which ->
+                val selectedShape = when (which) {
+                    0 -> ShapeType.RECTANGLE
+                    1 -> ShapeType.CIRCLE
+                    else -> ShapeType.LINE
+                }
+                binding.canvasView.setToolToShape(selectedShape)
+            }
+        }.create().show()
+    }
+
+    private fun showTextDialog() {
+        val input = EditText(this).apply { inputType = InputType.TYPE_CLASS_TEXT }
+        AlertDialog.Builder(this).apply {
+            setTitle("Enter Text")
+            setView(input)
+            setPositiveButton("OK") { _, _ ->
+                val text = input.text.toString()
+                if (text.isNotEmpty()) binding.canvasView.setToolToText(text)
+            }
+            setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+        }.show()
+    }
 
     private fun shareDrawing() {
-        // ... (implementation remains the same)
+        val bitmap = binding.canvasView.getDrawingAsBitmap() ?: return
+        Thread {
+            val imageUri = saveBitmapToCache(bitmap)
+            if (imageUri == null) {
+                runOnUiThread { Toast.makeText(this, "Failed to share drawing", Toast.LENGTH_SHORT).show() }
+                return@Thread
+            }
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/jpeg"
+                putExtra(Intent.EXTRA_STREAM, imageUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(shareIntent, "Share Drawing"))
+        }.start()
     }
 
     private fun saveBitmapToCache(bitmap: Bitmap): Uri? {
-        // ... (implementation remains the same)
+        return try {
+            val cachePath = File(cacheDir, "images")
+            cachePath.mkdirs()
+            val file = File(cachePath, "doodle_to_share.jpg")
+            val fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream)
+            fileOutputStream.close()
+            FileProvider.getUriForFile(this, "${applicationContext.packageName}.fileprovider", file)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
     }
 
     private fun handleIncomingIntents() {
-        // ... (implementation remains the same)
+        if (intent.hasExtra("EDIT_DRAWING_URI")) {
+            val uriString = intent.getStringExtra("EDIT_DRAWING_URI")
+            if (uriString != null) {
+                try {
+                    val uri = Uri.parse(uriString)
+                    val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
+                    binding.canvasView.loadBitmapForEditing(bitmap)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Failed to load drawing for editing.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 }
